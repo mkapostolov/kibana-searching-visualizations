@@ -27,12 +27,12 @@
 <body>
 <div class="reveal">
 <div class="slides">
-<section id="sec-title-slide"><h1 class="title">Searching Kibana Logs</h1><h2 class="author">Martin Apostolov</h2><p class="date">Created: 2020-07-23 Thu 12:19</p>
+<section id="sec-title-slide"><h1 class="title">Searching Kibana Logs</h1><h2 class="author">Martin Apostolov</h2><p class="date">Created: 2020-07-23 Thu 12:27</p>
 </section>
 
 <section>
-<section id="slide-org19daf4a">
-<h2 id="org19daf4a">Productivity tools</h2>
+<section id="slide-orgbfde5c2">
+<h2 id="orgbfde5c2">Productivity tools</h2>
 <ul>
 <li>Using bookmarks to save a predefined search view<br /></li>
 <li>Alfred<br /></li>
@@ -42,13 +42,13 @@
 </section>
 </section>
 <section>
-<section id="slide-orge389ff4">
-<h2 id="orge389ff4">Basic search</h2>
-<div class="outline-text-2" id="text-orge389ff4">
+<section id="slide-org3996411">
+<h2 id="org3996411">Basic search</h2>
+<div class="outline-text-2" id="text-org3996411">
 </div>
 </section>
-<section id="slide-orgd2a6284">
-<h3 id="orgd2a6284">Basic syntax</h3>
+<section id="slide-org9579306">
+<h3 id="org9579306">Basic syntax</h3>
 <div style="font-size: 1em; color:lightGreen; text-align: left">
 <p>
 <b>Field contains value</b><br />
@@ -82,7 +82,7 @@ _exists_:responseHeaders.x-kinvey-executed-collection-hooks
 </pre>
 
 </section>
-<section id="slide-orgd2a6284-split">
+<section id="slide-org9579306-split">
 <div style="font-size: 0.8em; text-align: left">
 
 <div style="font-size: 1.2em; color:lightGreen; text-align: left">
@@ -138,7 +138,7 @@ statusCode:&gt;=400
 
 
 </section>
-<section id="slide-orgd2a6284-split">
+<section id="slide-org9579306-split">
 <div style="font-size: 100%; text-align: left">
 <p>
 It is always best to <b>specify the field</b> you are searching in as this <b>greatly increases the search speed</b>.<br />
@@ -160,8 +160,8 @@ vs<br />
 </section>
 </section>
 <section>
-<section id="slide-orgb27bb36">
-<h2 id="orgb27bb36">Complex searching</h2>
+<section id="slide-org7ebf5a6">
+<h2 id="org7ebf5a6">Complex searching</h2>
 <div style="font-size: 0.; text-align: left">
 
 <div style="font-size: 1em; color:lightGreen; text-align: left">
@@ -201,7 +201,7 @@ Multiple terms or clauses can be grouped together with parentheses, to form sub-
 </pre>
 
 </section>
-<section id="slide-orgb27bb36-split">
+<section id="slide-org7ebf5a6-split">
 <div style="font-size: 1em; text-align: left">
 
 <div style="font-size: 1em; color:lightGreen; text-align: left">
@@ -224,8 +224,8 @@ custdep:kvyus1 AND _type:kcs-debug AND NOT method:POST
 </section>
 </section>
 <section>
-<section id="slide-org0218dff">
-<h2 id="org0218dff">KCS logs</h2>
+<section id="slide-orgfc3ad77">
+<h2 id="orgfc3ad77">KCS logs</h2>
 <div style="font-size: 1em; color:lightGreen;text-alight:center">
 <p>
 _type:kcs-debug<br />
@@ -313,8 +313,8 @@ These logs are used 90% of the time<br />
 </section>
 </section>
 <section>
-<section id="slide-orgbc6f907">
-<h2 id="orgbc6f907">Haproxy logs</h2>
+<section id="slide-org94fd36d">
+<h2 id="org94fd36d">Haproxy logs</h2>
 <div style="font-size: 1em; color:lightGreen; text-align:center">
 <p>
 _type:haproxy-info<br />
@@ -329,8 +329,8 @@ Best to track <b>502</b>, <b>503</b> and <b>504</b> error codes as they are rece
 </section>
 </section>
 <section>
-<section id="slide-orgb3fd8bc">
-<h2 id="orgb3fd8bc">KAS logs</h2>
+<section id="slide-org7362179">
+<h2 id="org7362179">KAS logs</h2>
 <div style="font-size: 1em; color:lightGreen; text-align:center">
 <p>
 _type:kas-outgoing<br />
@@ -363,13 +363,13 @@ _type:kas-outgoing<br />
 </section>
 </section>
 <section>
-<section id="slide-orgaa3f3b7">
-<h2 id="orgaa3f3b7">Visualisations</h2>
-<div class="outline-text-2" id="text-orgaa3f3b7">
+<section id="slide-org298148b">
+<h2 id="org298148b">Visualizations</h2>
+<div class="outline-text-2" id="text-org298148b">
 </div>
 </section>
-<section id="slide-org355a730">
-<h3 id="org355a730">Basic Charts</h3>
+<section id="slide-orgdbb073a">
+<h3 id="orgdbb073a">Basic Charts</h3>
 <div style="font-size: 1em; text-align: left">
 <p>
 Group values with <b>ranges</b><br />
@@ -380,8 +380,8 @@ Group values with <b>ranges</b><br />
 <b>Terms</b> - Returns documents that contain one or more exact terms in a provided field <a href="https://logs.kinvey.com/goto/5cc21a4d4fba8892b48a7f36b6586099">https://logs.kinvey.com/goto/5cc21a4d4fba8892b48a7f36b6586099</a><br />
 </p>
 </section>
-<section id="slide-orga5f9d4d">
-<h3 id="orga5f9d4d">Data tables</h3>
+<section id="slide-org27761f6">
+<h3 id="org27761f6">Data tables</h3>
 <div style="font-size: 1em; text-align: left">
 <ul>
 <li>Great for listing Sum, Count and Average values for groups of data<br /></li>
@@ -394,8 +394,8 @@ Example:<br />
 <a href="https://logs.kinvey.com/goto/14c9246c8a7d7e9d0bee4b9cc7225de9">https://logs.kinvey.com/goto/14c9246c8a7d7e9d0bee4b9cc7225de9</a><br />
 </p>
 </section>
-<section id="slide-orgf1aa65c">
-<h3 id="orgf1aa65c">Time Series Visual Builder</h3>
+<section id="slide-org2e20015">
+<h3 id="org2e20015">Time Series Visual Builder</h3>
 <div style="font-size: 1em; text-align: left">
 <p>
 Advantages:<br />
@@ -413,8 +413,8 @@ UI is better and charts are pretier and more functional.<br />
 </section>
 </section>
 <section>
-<section id="slide-org1108650">
-<h2 id="org1108650">Dashboards</h2>
+<section id="slide-orge950fab">
+<h2 id="orge950fab">Dashboards</h2>
 <div style="font-size: 1em; text-align: left">
 <p>
 Haproxy requests dashboard - OLD - <a href="https://logs.kinvey.com/goto/4e1dc22d5c23e44ac5c1fd6718bdf40f">https://logs.kinvey.com/goto/4e1dc22d5c23e44ac5c1fd6718bdf40f</a><br />
