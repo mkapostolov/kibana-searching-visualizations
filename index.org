@@ -1,0 +1,214 @@
+#+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js
+#+REVEAL_INIT_OPTIONS: width:1200, height:800, margin: 0.2, minScale:0.2, maxScale:3.5, hash:true, history:true, controlsTutorial:true
+#+REVEAL_THEME: night
+#+OPTIONS: toc:nil
+#+OPTIONS: num:nil 
+#+OPTIONS: \n:t
+#+REVEAL_EXTRA_CSS: ./custom.css
+
+#+Title: Searching Kibana Logs
+#+Author: Martin Apostolov
+
+* Productivity tools
+  - Using bookmarks to save a predefined search view
+  - Alfred
+  - RenameTab plugin for Chrome
+* Basic search
+** Basic syntax
+#+REVEAL_HTML: <div style="font-size: 1em; color:lightGreen; text-align: left">
+*Field contains value*
+#+REVEAL_HTML: </div> 
+#+BEGIN_SRC 
+_type:kcs-debug
+#+END_SRC  
+
+#+REVEAL_HTML: <div style="font-size: 1em; color:lightGreen; text-align: left">
+*Field contains one OR another value*
+#+REVEAL_HTML: </div> 
+#+BEGIN_SRC 
+method:(GET OR POST)
+method:(GET POST)
+  #+END_SRC
+
+#+REVEAL_HTML: <div style="font-size: 1em; color:lightGreen; text-align: left">
+*Field contains non-null value*
+#+REVEAL_HTML: </div> 
+#+BEGIN_SRC
+// All requests from Scheduler
+_exists_:requestHeaders.x-kinvey-scheduled-code-version
+
+// All request to collections with hooks
+_exists_:responseHeaders.x-kinvey-executed-collection-hooks
+#+END_SRC
+
+#+REVEAL: split
+#+REVEAL_HTML: <div style="font-size: 0.8em; text-align: left">
+
+#+REVEAL_HTML: <div style="font-size: 1.2em; color:lightGreen; text-align: left">
+*Wildcards*
+#+REVEAL_HTML: </div> 
+'?' to replace a single character
+'*' to replace zero or more characters
+
+#+BEGIN_SRC 
+_type:kas-*
+#+END_SRC
+
+#+REVEAL_HTML: <div style="font-size: 1.2em; color:lightBlue; text-align: left">
+*Regular expressions*
+#+REVEAL_HTML: </div> 
+Do not work
+
+#+REVEAL_HTML: <div style="font-size: 1.2em; color:lightGreen; margin-top: 20px; text-align: left">
+*Ranges*
+#+REVEAL_HTML: </div> 
+Inclusive: [min TO max]
+Exclusive: {min TO max}
+#+BEGIN_SRC 
+statusCode:[200 TO 400}
+#+END_SRC
+
+#+REVEAL_HTML: <div style="font-size: 1.2em; color:lightGreen; text-align: left">
+*Also ">" "<"*
+#+REVEAL_HTML: </div> 
+#+BEGIN_SRC 
+// All non-error codes
+statusCode:<400
+
+// All error codes
+statusCode:>=400
+#+END_SRC
+
+#+REVEAL_HTML: </div> 
+
+
+#+REVEAL: split
+#+REVEAL_HTML: <div style="font-size: 100%; text-align: left">
+It is always best to *specify the field* you are searching in as this *greatly increases the search speed*. 
+Not specifying the field causes the search to go through all fields.
+
+Example:
+#+BEGIN_SRC 
+kinveyApp:"kid_-yj4pCgcq"
+#+END_SRC
+vs
+#+BEGIN_SRC 
+"kid_-yj4pCgcq"
+#+END_SRC
+* Complex searching
+  #+REVEAL_HTML: <div style="font-size: 0.; text-align: left">
+
+  #+REVEAL_HTML: <div style="font-size: 1em; color:lightGreen; text-align: left">
+  Default operator
+  #+REVEAL_HTML: </div> 
+
+  The default_operator is a variable which defaults to "OR" operator if not set to another operator. Currently the default_operator is "OR".
+  
+#+BEGIN_SRC 
+method:(GET POST)
+// same as
+method:(GET OR POST)
+#+END_SRC
+
+#+BEGIN_SRC 
+// AND, OR and NOT (also written &&, || and !)
+method:(GET POST)
+// same as
+method:(GET || POST)
+#+END_SRC
+
+#+REVEAL_HTML: <div style="font-size: 1em; color:lightGreen; text-align: left">
+Grouping
+#+REVEAL_HTML: </div> 
+Multiple terms or clauses can be grouped together with parentheses, to form sub-queries.
+
+#+BEGIN_SRC 
+("oauth" OR "SAML") AND _type:kas-outgoing
+#+END_SRC
+
+#+REVEAL: split
+#+REVEAL_HTML: <div style="font-size: 1em; text-align: left">
+
+#+REVEAL_HTML: <div style="font-size: 1em; color:lightGreen; text-align: left">
+Boolean operators
+#+REVEAL_HTML: </div> 
+'+' (this term must be present) 
+'-' (this term must not be present)
+All other terms are optional
+
+#+BEGIN_SRC 
++custdep:kvyus1 +_type:kcs-debug -method:POST
+// same as
+custdep:kvyus1 AND _type:kcs-debug AND NOT method:POST
+#+END_SRC
+
+* KCS logs
+#+REVEAL_HTML: <div style="font-size: 1em; color:lightGreen;text-alight:center">
+_type:kcs-debug
+#+REVEAL_HTML: </div> 
+  
+#+REVEAL_HTML: <div style="font-size: 0.9em; text-align:center">
+These logs are used 90% of the time
+
+#+REVEAL_HTML: <div style="font-size: 0.7em; text-align: left">
+| Important fields                                   | Description                       |
+|----------------------------------------------------+-----------------------------------|
+| custdep                                            | limit search to specific instance |
+| kinveyAPI                                          | appdata, rpc, user, blob, ping    |
+| authType                                           | Basic, AuthToken                  |
+| credentialsUsed                                    | app, master, user                 |
+| userId                                             | user that made the request        |
+| requestHeaders.x-kinvey-device-info                |                                   |
+| requestHeaders.user-agent                          |                                   |
+| requestHeaders.x-kinvey-api-version                |                                   |
+| requestDuration                                    |                                   |
+| requestHeaders.x-kinvey-scheduled-code-version     |                                   |
+| responseHeaders.x-kinvey-executed-collection-hooks |                                   |
+
+* Haproxy logs
+#+REVEAL_HTML: <div style="font-size: 1em; color:lightGreen; text-align:center">
+_type:haproxy-info
+#+REVEAL_HTML: </div> 
+
+#+REVEAL_HTML: <div style="font-size: 0.9em; text-align:center">
+Best to track *502*, *503* and *504* error codes as they are received by customers but not logged in kcs-debug
+
+* KAS logs
+#+REVEAL_HTML: <div style="font-size: 1em; color:lightGreen; text-align:center">
+_type:kas-outgoing
+#+REVEAL_HTML: </div> 
+
+#+REVEAL_HTML: <div style="font-size: 0.7em; text-align: left">
+| Important fields | Description                                        |
+|------------------+----------------------------------------------------|
+| authFlowId       | used to track all requests in single login process |
+
+* Visualizations
+** Basic Charts
+  #+REVEAL_HTML: <div style="font-size: 1em; text-align: left">
+Group values with *ranges*
+https://logs.kinvey.com/goto/1400fc8d2f26e9d7f1044f63ddf0c9b4  
+
+*Terms* - Returns documents that contain one or more exact terms in a provided field https://logs.kinvey.com/goto/5cc21a4d4fba8892b48a7f36b6586099
+** Data tables
+  #+REVEAL_HTML: <div style="font-size: 1em; text-align: left">
+ - Great for listing Sum, Count and Average values for groups of data
+ - Great for listing unique values and exporting them in csv format
+ 
+Example:
+https://logs.kinvey.com/goto/14c9246c8a7d7e9d0bee4b9cc7225de9
+** Time Series Visual Builder
+  #+REVEAL_HTML: <div style="font-size: 1em; text-align: left">
+Advantages:
+- combine an infinite number of aggregations
+- pipeline aggregations
+
+With TSVB you can display more complex data in a meaningful way.
+UI is better and charts are pretier and more functional.
+* Dashboards
+  #+REVEAL_HTML: <div style="font-size: 1em; text-align: left">
+  Haproxy requests dashboard - OLD - https://logs.kinvey.com/goto/4e1dc22d5c23e44ac5c1fd6718bdf40f
+  Haproxy requests dashboard - NEW - https://logs.kinvey.com/goto/8206a2ef565bb49d663cc44238562ef5
+  KSS requests dashboard - OLD - https://logs.kinvey.com/goto/4507092c6a114871ae60326c8d075ea2
+  KCS requests dashboard - NEW - https://logs.kinvey.com/goto/cc214f57dc79ba352e8a3f38a96685be
+  

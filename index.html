@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Searching Kibana Logs</title>
+<meta name="author" content="(Martin Apostolov)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/css/reveal.css"/>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/css/theme/night.css" id="theme"/>
+
+<link rel="stylesheet" href="./custom.css"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'https://cdn.jsdelivr.net/npm/reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">Searching Kibana Logs</h1><h2 class="author">Martin Apostolov</h2><p class="date">Created: 2020-07-23 Thu 12:19</p>
+</section>
+
+<section>
+<section id="slide-org19daf4a">
+<h2 id="org19daf4a">Productivity tools</h2>
+<ul>
+<li>Using bookmarks to save a predefined search view<br /></li>
+<li>Alfred<br /></li>
+<li>RenameTab plugin for Chrome<br /></li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orge389ff4">
+<h2 id="orge389ff4">Basic search</h2>
+<div class="outline-text-2" id="text-orge389ff4">
+</div>
+</section>
+<section id="slide-orgd2a6284">
+<h3 id="orgd2a6284">Basic syntax</h3>
+<div style="font-size: 1em; color:lightGreen; text-align: left">
+<p>
+<b>Field contains value</b><br />
+</p>
+</div>
+<pre  class="example">
+_type:kcs-debug
+</pre>
+
+<div style="font-size: 1em; color:lightGreen; text-align: left">
+<p>
+<b>Field contains one OR another value</b><br />
+</p>
+</div>
+<pre  class="example">
+method:(GET OR POST)
+method:(GET POST)
+</pre>
+
+<div style="font-size: 1em; color:lightGreen; text-align: left">
+<p>
+<b>Field contains non-null value</b><br />
+</p>
+</div>
+<pre  class="example">
+// All requests from Scheduler
+_exists_:requestHeaders.x-kinvey-scheduled-code-version
+
+// All request to collections with hooks
+_exists_:responseHeaders.x-kinvey-executed-collection-hooks
+</pre>
+
+</section>
+<section id="slide-orgd2a6284-split">
+<div style="font-size: 0.8em; text-align: left">
+
+<div style="font-size: 1.2em; color:lightGreen; text-align: left">
+<p>
+<b>Wildcards</b><br />
+</p>
+</div>
+<p>
+'?' to replace a single character<br />
+'*' to replace zero or more characters<br />
+</p>
+
+<pre  class="example">
+_type:kas-*
+</pre>
+
+<div style="font-size: 1.2em; color:lightBlue; text-align: left">
+<p>
+<b>Regular expressions</b><br />
+</p>
+</div>
+<p>
+Do not work<br />
+</p>
+
+<div style="font-size: 1.2em; color:lightGreen; margin-top: 20px; text-align: left">
+<p>
+<b>Ranges</b><br />
+</p>
+</div>
+<p>
+Inclusive: [min TO max]<br />
+Exclusive: {min TO max}<br />
+</p>
+<pre  class="example">
+statusCode:[200 TO 400}
+</pre>
+
+<div style="font-size: 1.2em; color:lightGreen; text-align: left">
+<p>
+<b>Also "&gt;" "&lt;"</b><br />
+</p>
+</div>
+<pre  class="example">
+// All non-error codes
+statusCode:&lt;400
+
+// All error codes
+statusCode:&gt;=400
+</pre>
+
+</div>
+
+
+</section>
+<section id="slide-orgd2a6284-split">
+<div style="font-size: 100%; text-align: left">
+<p>
+It is always best to <b>specify the field</b> you are searching in as this <b>greatly increases the search speed</b>.<br />
+Not specifying the field causes the search to go through all fields.<br />
+</p>
+
+<p>
+Example:<br />
+</p>
+<pre  class="example">
+kinveyApp:"kid_-yj4pCgcq"
+</pre>
+<p>
+vs<br />
+</p>
+<pre  class="example">
+"kid_-yj4pCgcq"
+</pre>
+</section>
+</section>
+<section>
+<section id="slide-orgb27bb36">
+<h2 id="orgb27bb36">Complex searching</h2>
+<div style="font-size: 0.; text-align: left">
+
+<div style="font-size: 1em; color:lightGreen; text-align: left">
+<p>
+Default operator<br />
+</p>
+</div>
+
+<p>
+The default<sub>operator</sub> is a variable which defaults to "OR" operator if not set to another operator. Currently the default<sub>operator</sub> is "OR".<br />
+</p>
+
+<pre  class="example">
+method:(GET POST)
+// same as
+method:(GET OR POST)
+</pre>
+
+<pre  class="example">
+// AND, OR and NOT (also written &amp;&amp;, || and !)
+method:(GET POST)
+// same as
+method:(GET || POST)
+</pre>
+
+<div style="font-size: 1em; color:lightGreen; text-align: left">
+<p>
+Grouping<br />
+</p>
+</div>
+<p>
+Multiple terms or clauses can be grouped together with parentheses, to form sub-queries.<br />
+</p>
+
+<pre  class="example">
+("oauth" OR "SAML") AND _type:kas-outgoing
+</pre>
+
+</section>
+<section id="slide-orgb27bb36-split">
+<div style="font-size: 1em; text-align: left">
+
+<div style="font-size: 1em; color:lightGreen; text-align: left">
+<p>
+Boolean operators<br />
+</p>
+</div>
+<p>
+'+' (this term must be present)<br />
+'-' (this term must not be present)<br />
+All other terms are optional<br />
+</p>
+
+<pre  class="example">
++custdep:kvyus1 +_type:kcs-debug -method:POST
+// same as
+custdep:kvyus1 AND _type:kcs-debug AND NOT method:POST
+</pre>
+
+</section>
+</section>
+<section>
+<section id="slide-org0218dff">
+<h2 id="org0218dff">KCS logs</h2>
+<div style="font-size: 1em; color:lightGreen;text-alight:center">
+<p>
+_type:kcs-debug<br />
+</p>
+</div>
+
+<div style="font-size: 0.9em; text-align:center">
+<p>
+These logs are used 90% of the time<br />
+</p>
+
+<div style="font-size: 0.7em; text-align: left">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Important fields</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">custdep</td>
+<td class="org-left">limit search to specific instance</td>
+</tr>
+
+<tr>
+<td class="org-left">kinveyAPI</td>
+<td class="org-left">appdata, rpc, user, blob, ping</td>
+</tr>
+
+<tr>
+<td class="org-left">authType</td>
+<td class="org-left">Basic, AuthToken</td>
+</tr>
+
+<tr>
+<td class="org-left">credentialsUsed</td>
+<td class="org-left">app, master, user</td>
+</tr>
+
+<tr>
+<td class="org-left">userId</td>
+<td class="org-left">user that made the request</td>
+</tr>
+
+<tr>
+<td class="org-left">requestHeaders.x-kinvey-device-info</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">requestHeaders.user-agent</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">requestHeaders.x-kinvey-api-version</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">requestDuration</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">requestHeaders.x-kinvey-scheduled-code-version</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">responseHeaders.x-kinvey-executed-collection-hooks</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+</section>
+<section>
+<section id="slide-orgbc6f907">
+<h2 id="orgbc6f907">Haproxy logs</h2>
+<div style="font-size: 1em; color:lightGreen; text-align:center">
+<p>
+_type:haproxy-info<br />
+</p>
+</div>
+
+<div style="font-size: 0.9em; text-align:center">
+<p>
+Best to track <b>502</b>, <b>503</b> and <b>504</b> error codes as they are received by customers but not logged in kcs-debug<br />
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgb3fd8bc">
+<h2 id="orgb3fd8bc">KAS logs</h2>
+<div style="font-size: 1em; color:lightGreen; text-align:center">
+<p>
+_type:kas-outgoing<br />
+</p>
+</div>
+
+<div style="font-size: 0.7em; text-align: left">
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Important fields</th>
+<th scope="col" class="org-left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">authFlowId</td>
+<td class="org-left">used to track all requests in single login process</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+</section>
+<section>
+<section id="slide-orgaa3f3b7">
+<h2 id="orgaa3f3b7">Visualisations</h2>
+<div class="outline-text-2" id="text-orgaa3f3b7">
+</div>
+</section>
+<section id="slide-org355a730">
+<h3 id="org355a730">Basic Charts</h3>
+<div style="font-size: 1em; text-align: left">
+<p>
+Group values with <b>ranges</b><br />
+<a href="https://logs.kinvey.com/goto/1400fc8d2f26e9d7f1044f63ddf0c9b4">https://logs.kinvey.com/goto/1400fc8d2f26e9d7f1044f63ddf0c9b4</a>  <br />
+</p>
+
+<p>
+<b>Terms</b> - Returns documents that contain one or more exact terms in a provided field <a href="https://logs.kinvey.com/goto/5cc21a4d4fba8892b48a7f36b6586099">https://logs.kinvey.com/goto/5cc21a4d4fba8892b48a7f36b6586099</a><br />
+</p>
+</section>
+<section id="slide-orga5f9d4d">
+<h3 id="orga5f9d4d">Data tables</h3>
+<div style="font-size: 1em; text-align: left">
+<ul>
+<li>Great for listing Sum, Count and Average values for groups of data<br /></li>
+<li>Great for listing unique values and exporting them in csv format<br /></li>
+
+</ul>
+
+<p>
+Example:<br />
+<a href="https://logs.kinvey.com/goto/14c9246c8a7d7e9d0bee4b9cc7225de9">https://logs.kinvey.com/goto/14c9246c8a7d7e9d0bee4b9cc7225de9</a><br />
+</p>
+</section>
+<section id="slide-orgf1aa65c">
+<h3 id="orgf1aa65c">Time Series Visual Builder</h3>
+<div style="font-size: 1em; text-align: left">
+<p>
+Advantages:<br />
+</p>
+<ul>
+<li>combine an infinite number of aggregations<br /></li>
+<li>pipeline aggregations<br /></li>
+
+</ul>
+
+<p>
+With TSVB you can display more complex data in a meaningful way.<br />
+UI is better and charts are pretier and more functional.<br />
+</p>
+</section>
+</section>
+<section>
+<section id="slide-org1108650">
+<h2 id="org1108650">Dashboards</h2>
+<div style="font-size: 1em; text-align: left">
+<p>
+Haproxy requests dashboard - OLD - <a href="https://logs.kinvey.com/goto/4e1dc22d5c23e44ac5c1fd6718bdf40f">https://logs.kinvey.com/goto/4e1dc22d5c23e44ac5c1fd6718bdf40f</a><br />
+Haproxy requests dashboard - NEW - <a href="https://logs.kinvey.com/goto/8206a2ef565bb49d663cc44238562ef5">https://logs.kinvey.com/goto/8206a2ef565bb49d663cc44238562ef5</a><br />
+KSS requests dashboard - OLD - <a href="https://logs.kinvey.com/goto/4507092c6a114871ae60326c8d075ea2">https://logs.kinvey.com/goto/4507092c6a114871ae60326c8d075ea2</a><br />
+KCS requests dashboard - NEW - <a href="https://logs.kinvey.com/goto/cc214f57dc79ba352e8a3f38a96685be">https://logs.kinvey.com/goto/cc214f57dc79ba352e8a3f38a96685be</a><br />
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+width:1200, height:800, margin: 0.2, minScale:0.2, maxScale:3.5, hash:true, history:true, controlsTutorial:true,
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'https://cdn.jsdelivr.net/npm/reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
